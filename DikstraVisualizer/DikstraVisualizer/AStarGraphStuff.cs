@@ -6,67 +6,65 @@ using System.Threading.Tasks;
 
 namespace DikstraVisualizer
 {
-    
-    public class Edge<T>
+    public class EdgeForA<T>
     {
-        public Vertex<T> StartingPoint { get; set; }
-        public Vertex<T> EndingPoint { get; set; }
+        public VertexForA<T> StartingPoint { get; set; }
+        public VertexForA<T> EndingPoint { get; set; }
         public float Distance { get; set; }
 
-        public Edge(Vertex<T> startingPoint, Vertex<T> endingPoint, float distance)
+        public EdgeForA(VertexForA<T> startingPoint, VertexForA<T> endingPoint, float distance)
         {
             StartingPoint = startingPoint;
             EndingPoint = endingPoint;
             Distance = distance;
         }
     }
-
-    public class Vertex<T>
+    public class VertexForA<T>
     {
         public float CumlativeDistance;
-        public Vertex<T> Founder;
-        bool HasBeenVisited;
+        public VertexForA<T> Founder;
+        public bool HasBeenVisited;
         public T Value { get; set; }
-        public List<Edge<T>> Neighbors { get; set; }
+        public List<EdgeForA<T>> Neighbors { get; set; }
+
+        public float FinalDistance;
 
         public int NeighborCount => Neighbors.Count;
 
-        public Vertex(T value, float distance, Vertex<T> vertex)
+        public VertexForA(T value)
         {
-            CumlativeDistance = distance;
-            Founder = vertex;
+            CumlativeDistance = float.PositiveInfinity;
+            FinalDistance = float.PositiveInfinity;
+            Founder = null;
             HasBeenVisited = false;
-            Neighbors = new List<Edge<T>>();
+            Neighbors = new List<EdgeForA<T>>();
             Value = value;
         }
     }
-
-    public class Graph<T>
+    public class GraphForAStar<T>
     {
-        
-        private List<Vertex<T>> vertices;
+        #region GraphStuff
+        private List<VertexForA<T>> vertices;
         #region
         class ooga { public static bool booga => true; }
 
         # endregion
-        private List<Edge<T>> edges;
+        private List<EdgeForA<T>> edges;
         private List<T> verticesValues;
-        public IReadOnlyList<Vertex<T>> Vertices => vertices;
-        public IReadOnlyList<Edge<T>> Edges => edges;
 
-        public int VertexCount => vertices.Count;
+        public int VertexForACount => vertices.Count;
 
-        public Graph()
+        public GraphForAStar()
         {
-            vertices = new List<Vertex<T>>();
-            edges = new List<Edge<T>>();
+            vertices = new List<VertexForA<T>>();
+            edges = new List<EdgeForA<T>>();
             verticesValues = new List<T>();
         }
         public void AddVertex(T Value)
         {
-            AddVertex(new Vertex<T>(Value,float.PositiveInfinity,null));
+            AddVertex(new VertexForA<T>(Value));
         }
-        public void AddVertex(Vertex<T> vertex)
+        public void AddVertex(VertexForA<T> vertex)
         {
             if (vertex == null || vertex.NeighborCount != 0 || vertices.Contains(vertex) || verticesValues.Contains(vertex.Value))
             {
@@ -75,13 +73,13 @@ namespace DikstraVisualizer
             vertices.Add(vertex);
             verticesValues.Add(vertex.Value);
         }
-        public bool RemoveVertex(Vertex<T> vertex)
+        public bool RemoveVertex(VertexForA<T> vertex)
         {
             if (!vertices.Contains(vertex))
             {
                 return false;
             }
-           
+
             for (int i = 0; i < edges.Count; i++)
             {
                 if (edges[i].EndingPoint == vertex)
@@ -99,18 +97,18 @@ namespace DikstraVisualizer
             verticesValues.Remove(vertex.Value);
             return true;
         }
-        public bool AddEdge(Vertex<T> a, Vertex<T> b, float distance)
+        public bool AddEdge(VertexForA<T> a, VertexForA<T> b, float distance)
         {
             if (a == null || b == null || a == b || !vertices.Contains(a) || !vertices.Contains(b) || GetEdge(a, b) != null)
             {
                 return false;
             }
-            Edge<T> edge = new Edge<T>(a,b,distance);
+            EdgeForA<T> edge = new EdgeForA<T>(a, b, distance);
             edges.Add(edge);
             a.Neighbors.Add(edge);
             return true;
         }
-        public bool RemoveEdge(Vertex<T> a, Vertex<T> b)
+        public bool RemoveEdge(VertexForA<T> a, VertexForA<T> b)
         {
             if (a == null || b == null || GetEdge(a, b) == null)
             {
@@ -118,7 +116,7 @@ namespace DikstraVisualizer
             }
             a.Neighbors.Remove(GetEdge(a, b));
             edges.Remove(GetEdge(a, b));
-           
+
             return true;
         }
         public int SearchForVertexIndex(T value)
@@ -132,7 +130,7 @@ namespace DikstraVisualizer
             }
             return -1;
         }
-        public Vertex<T> Search(T value)
+        public VertexForA<T> Search(T value)
         {
             for (int i = 0; i < vertices.Count; i++)
             {
@@ -143,7 +141,7 @@ namespace DikstraVisualizer
             }
             return null;
         }
-        public int GetEdgeIndex(Vertex<T> a, Vertex<T> b)
+        public int GetEdgeIndex(VertexForA<T> a, VertexForA<T> b)
         {
             if (a == null || b == null)
             {
@@ -158,13 +156,13 @@ namespace DikstraVisualizer
             }
             return -1;
         }
-        public Edge<T> GetEdge(Vertex<T> a, Vertex<T> b)
+        public EdgeForA<T> GetEdge(VertexForA<T> a, VertexForA<T> b)
         {
             if (a == null || b == null)
             {
                 return null;
             }
-            
+
             for (int i = 0; i < edges.Count; i++)
             {
                 if (edges[i].StartingPoint == a && edges[i].EndingPoint == b)
@@ -174,35 +172,73 @@ namespace DikstraVisualizer
             }
             return null;
         }
-        public List<T> DijkstrasAlgorithm(Vertex<T> a,Vertex<T> b)
+        #endregion GraphStuff
+
+        public int HeurManhattan()
         {
-            if(a == null | b == null | a == b | ooga.booga | )
+            return 0;
+        }
+        public int HeurDiagonal()
+        {
+            return 1;
+        }
+        public int HeurEuclidean()
+        {
+            return 2;
+        }
+        public List<VertexForA<T>> AStarSearchAlgorithm(VertexForA<T> a, VertexForA<T> b)
+        {
+            if(a == null | b == null | a == b | !ooga.booga | a.NeighborCount == 0)
             {
                 return null;
             }
             foreach(var vertex in vertices)
             {
-                vertex.Founder = null;
-                vertex.Neighbors = null;
+                vertex.HasBeenVisited = false;
                 vertex.CumlativeDistance = float.PositiveInfinity;
+                vertex.FinalDistance = float.PositiveInfinity;
+                vertex.Founder = null;
             }
             a.CumlativeDistance = 0;
-            PriorityQueue<Vertex<T>, float> sortedQueue = new PriorityQueue<Vertex<T>, float>();
-            sortedQueue.Enqueue(a,a.CumlativeDistance);
-            while (sortedQueue.Count != 0)
+            
+            /* change */ a.FinalDistance = a.CumlativeDistance + HeurEuclidean();// change
+
+            PriorityQueue<VertexForA<T>, float> queue = new PriorityQueue<VertexForA<T>, float>();
+            List<VertexForA<T>> list = new List<VertexForA<T>>();
+
+            queue.Enqueue(a, a.FinalDistance);
+            list.Add(a);
+            while (queue.Count != 0 && !b.HasBeenVisited)
             {
-                Vertex<T> current = sortedQueue.Dequeue();
+                VertexForA<T> current = queue.Dequeue();
+
                 for(int i = 0;i < current.NeighborCount;i++)
                 {
-                    float tentativeDistance = current.CumlativeDistance + current.Neighbors[i].Distance;
-                    if(tentativeDistance < current.Neighbors[i].EndingPoint.CumlativeDistance)
+                    EdgeForA<T> curEdge = current.Neighbors[i];
+                    float tentativeDistance = current.CumlativeDistance + curEdge.Distance;
+                    if(tentativeDistance < curEdge.EndingPoint.CumlativeDistance)
                     {
-                        current.Neighbors[i].EndingPoint.CumlativeDistance = tentativeDistance;
+                        curEdge.EndingPoint.CumlativeDistance = tentativeDistance;
+                        curEdge.EndingPoint.Founder = current;
+                        curEdge.EndingPoint.FinalDistance = curEdge.EndingPoint.CumlativeDistance + HeurEuclidean(); // change//
                     }
-                    
+                    if(!curEdge.EndingPoint.HasBeenVisited && !list.Contains(curEdge.EndingPoint))
+                    {
+                        queue.Enqueue(curEdge.EndingPoint,curEdge.EndingPoint.FinalDistance);
+                        list.Add(curEdge.EndingPoint);
+                    }
                 }
+                current.HasBeenVisited = true;
+
             }
+            List<VertexForA<T>> verticesVisited = new List<VertexForA<T>>();
+            VertexForA<T> ToAdd = b;
+            while (!verticesVisited.Contains(a))
+            {
+                verticesVisited.Add(ToAdd);
+                ToAdd = ToAdd.Founder;
+            }
+            return verticesVisited;
         }
     }
-
 }
