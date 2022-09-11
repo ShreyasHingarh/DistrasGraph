@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DikstraVisualizer
 {
@@ -28,11 +29,13 @@ namespace DikstraVisualizer
         public List<EdgeForA<T>> Neighbors { get; set; }
 
         public float FinalDistance;
+        public Rectangle Position { get; set; }
 
         public int NeighborCount => Neighbors.Count;
 
-        public VertexForA(T value)
+        public VertexForA(T value,Rectangle positions)
         {
+            Position = positions;
             CumlativeDistance = float.PositiveInfinity;
             FinalDistance = float.PositiveInfinity;
             Founder = null;
@@ -43,6 +46,8 @@ namespace DikstraVisualizer
     }
     public class GraphForAStar<T>
     {
+        public int Scalar;
+        public int Scalar2;
         #region GraphStuff
         private List<VertexForA<T>> vertices;
         #region
@@ -54,15 +59,17 @@ namespace DikstraVisualizer
 
         public int VertexForACount => vertices.Count;
 
-        public GraphForAStar()
+        public GraphForAStar(int scalar, int scalar2)
         {
             vertices = new List<VertexForA<T>>();
             edges = new List<EdgeForA<T>>();
             verticesValues = new List<T>();
+            Scalar = scalar;
+            Scalar2 = scalar2;
         }
-        public void AddVertex(T Value)
+        public void AddVertex(T Value,Rectangle position)
         {
-            AddVertex(new VertexForA<T>(Value));
+            AddVertex(new VertexForA<T>(Value,position));
         }
         public void AddVertex(VertexForA<T> vertex)
         {
@@ -174,17 +181,23 @@ namespace DikstraVisualizer
         }
         #endregion GraphStuff
 
-        public int HeurManhattan()
+        public int HeurManhattan(int nodeX,int nodeY,int goalX,int goalY)
         {
-            return 0;
+            int dx = Math.Abs(nodeX - goalX);
+            int dy = Math.Abs(-nodeY - goalY);
+            return Scalar * (dx + dy);
         }
-        public int HeurDiagonal()
+        public int HeurDiagonal(int nodeX, int nodeY, int goalX, int goalY)
         {
-            return 1;
+            int dx = Math.Abs(nodeX - goalX);
+            int dy = Math.Abs(nodeY - goalY);
+            return Scalar * (dx + dy) + (Scalar2 - 2 * Scalar) * Math.Min(dx,dy);
         }
-        public int HeurEuclidean()
+        public int HeurEuclidean(int nodeX, int nodeY, int goalX, int goalY)
         {
-            return 2;
+            int dx = Math.Abs(nodeX - goalX);
+            int dy = Math.Abs(nodeY - goalY);
+            return (int)(Scalar * Math.Sqrt(dx * dx + dy * dy));
         }
         public List<VertexForA<T>> AStarSearchAlgorithm(VertexForA<T> a, VertexForA<T> b)
         {
@@ -201,7 +214,7 @@ namespace DikstraVisualizer
             }
             a.CumlativeDistance = 0;
             
-            /* change */ a.FinalDistance = a.CumlativeDistance + HeurEuclidean();// change
+            a.FinalDistance = a.CumlativeDistance + HeurEuclidean(a.Position.X,a.Position.Y,b.Position.X,b.Position.Y);
 
             PriorityQueue<VertexForA<T>, float> queue = new PriorityQueue<VertexForA<T>, float>();
             List<VertexForA<T>> list = new List<VertexForA<T>>();
@@ -220,7 +233,7 @@ namespace DikstraVisualizer
                     {
                         curEdge.EndingPoint.CumlativeDistance = tentativeDistance;
                         curEdge.EndingPoint.Founder = current;
-                        curEdge.EndingPoint.FinalDistance = curEdge.EndingPoint.CumlativeDistance + HeurEuclidean(); // change//
+                        curEdge.EndingPoint.FinalDistance = curEdge.EndingPoint.CumlativeDistance + HeurEuclidean(curEdge.EndingPoint.Position.X, curEdge.EndingPoint.Position.Y,b.Position.X,b.Position.Y);
                     }
                     if(!curEdge.EndingPoint.HasBeenVisited && !list.Contains(curEdge.EndingPoint))
                     {
