@@ -9,8 +9,8 @@ namespace DikstraVisualizer
         Graphics g;
         int YAmount;
         int XAmount;
-        VertexForA<int> IsThereAStartPoint;
-        VertexForA<int> IsThereAEndPoint;
+        VertexForA<int> StartPoint;
+        VertexForA<int> EndPoint;
         VertexForA<int>[,] vertices;
         public void createVertices(int width)
         {
@@ -24,6 +24,7 @@ namespace DikstraVisualizer
                 {
                     VertexForA<int> temp = new VertexForA<int>(count, new Rectangle(startingX, startingY, width, width));
                     graph.AddVertex(temp);
+                    g.FillRectangle(Brushes.White, startingX, startingY, width, width);
                     g.DrawRectangle(Pens.Black,startingX, startingY, width, width);
                     vertices[i, x] = temp;
                     count++;
@@ -59,6 +60,22 @@ namespace DikstraVisualizer
                     {
                         graph.AddEdge(vertices[i, x], vertices[i, x + 1], distance);
                     }
+                    if(x - 1 > 0 && i + 1 < YAmount)
+                    {
+                        graph.AddEdge(vertices[i, x], vertices[i + 1, x - 1], distance);
+                    }
+                    if (x - 1 > 0 && i - 1 > 0)
+                    {
+                        graph.AddEdge(vertices[i, x], vertices[i - 1, x - 1], distance);
+                    }
+                    if (x + 1 < XAmount && i + 1 < YAmount)
+                    {
+                        graph.AddEdge(vertices[i, x], vertices[i + 1, x + 1], distance);
+                    }
+                    if (x + 1 < XAmount && i - 1 > 0)
+                    {
+                        graph.AddEdge(vertices[i, x], vertices[i - 1, x + 1], distance);
+                    }
                 }
             }
             
@@ -78,47 +95,87 @@ namespace DikstraVisualizer
         
         private void Form1_Load(object sender, EventArgs e)
         {
-            
             int width = 25;
             createVertices(width);
             createEdges();
-
-            while(true)
-            {
-                
-            }
+            ;
         }
 
         private void Picture_MouseClick(object sender, MouseEventArgs e)
         {
-            Point savedCordsOfMouse = MousePosition; 
+            Point savedCordsOfMouse = PointToClient(MousePosition); 
             if (e.Button == MouseButtons.Left)
             {
+                VertexForA<int> curvertex = new VertexForA<int>(-1,new Rectangle(-10,-10,-2,-2));
                 foreach (var vertex in vertices)
                 {
                     if(vertex.Position.Contains(savedCordsOfMouse))
                     {
-                        if(IsThereAStartPoint == null && IsThereAEndPoint == null)
-                        {
-                            g.FillRectangle(Brushes.Orange, vertex.Position);
-                            IsThereAStartPoint = vertex;
-                        }
-                        else if(IsThereAStartPoint != null && IsThereAStartPoint == vertex)
-                        {
-                            g.FillRectangle(Brushes.White, vertex.Position);
-                            IsThereAStartPoint = null;
-                        }
-                        else if(IsThereAStartPoint != null && IsThereAEndPoint == null)
-                        {
-
-                        }
+                        curvertex = vertex;
+                        break;
                     }
+                }
+                if (curvertex.Value == -1) return;
+                if (StartPoint == null && EndPoint == null)
+                {
+                    g.FillRectangle(Brushes.Green, curvertex.Position);
+                    StartPoint = curvertex;                    
+                }
+                else if (StartPoint != null && StartPoint == curvertex)
+                {
+                    g.FillRectangle(Brushes.White, curvertex.Position);
+                    g.DrawRectangle(Pens.Black, curvertex.Position);
+                    StartPoint = null;
+                }
+                else if (StartPoint != null && EndPoint == null && curvertex != StartPoint)
+                {
+                    g.FillRectangle(Brushes.Red, curvertex.Position);
+                    EndPoint = curvertex;
+                }
+                else if (EndPoint != null && EndPoint == curvertex)
+                {
+                    g.FillRectangle(Brushes.White, curvertex.Position);
+                    g.DrawRectangle(Pens.Black, curvertex.Position);
+                    EndPoint = null;
+                }
+                else if(EndPoint != null && StartPoint == null && EndPoint != curvertex)
+                {
+                    g.FillRectangle(Brushes.Green, curvertex.Position);
+                    StartPoint = curvertex;
                 }
             }
             if(e.Button == MouseButtons.Right)
             {
-                graph.AStarSearchAlgorithm();
+                if(StartPoint != null && EndPoint != null)
+                {
+                    List<VertexForA<int>> vertices = graph.AStarSearchAlgorithm(StartPoint, EndPoint);
+                    foreach(var vertex in vertices)
+                    {
+                        if (vertex != StartPoint && vertex != EndPoint)
+                        {
+                            g.FillRectangle(Brushes.Gray, vertex.Position);
+                        }
+                    }
+                }
+                
             }
+            Picture.Image = map;
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Up)
+            {
+                foreach (var vertex in vertices)
+                {
+                    g.FillRectangle(Brushes.White, vertex.Position);
+                    g.DrawRectangle(Pens.Black, vertex.Position);
+                }
+                StartPoint = null;
+                EndPoint = null;
+                Picture.Image = map;
+            }
+            
         }
     }
 }

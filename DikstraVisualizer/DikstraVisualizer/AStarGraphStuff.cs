@@ -214,7 +214,7 @@ namespace DikstraVisualizer
             }
             a.CumlativeDistance = 0;
             
-            a.FinalDistance = a.CumlativeDistance + HeurEuclidean(a.Position.X,a.Position.Y,b.Position.X,b.Position.Y);
+            a.FinalDistance = a.CumlativeDistance + HeurDiagonal(a.Position.X,a.Position.Y,b.Position.X,b.Position.Y);
 
             PriorityQueue<VertexForA<T>, float> queue = new PriorityQueue<VertexForA<T>, float>();
             List<VertexForA<T>> list = new List<VertexForA<T>>();
@@ -233,7 +233,7 @@ namespace DikstraVisualizer
                     {
                         curEdge.EndingPoint.CumlativeDistance = tentativeDistance;
                         curEdge.EndingPoint.Founder = current;
-                        curEdge.EndingPoint.FinalDistance = curEdge.EndingPoint.CumlativeDistance + HeurEuclidean(curEdge.EndingPoint.Position.X, curEdge.EndingPoint.Position.Y,b.Position.X,b.Position.Y);
+                        curEdge.EndingPoint.FinalDistance = curEdge.EndingPoint.CumlativeDistance + HeurDiagonal(curEdge.EndingPoint.Position.X, curEdge.EndingPoint.Position.Y,b.Position.X,b.Position.Y);
                     }
                     if(!curEdge.EndingPoint.HasBeenVisited && !list.Contains(curEdge.EndingPoint))
                     {
