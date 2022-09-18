@@ -12,6 +12,7 @@ namespace DikstraVisualizer
         VertexForA<int> StartPoint;
         VertexForA<int> EndPoint;
         VertexForA<int>[,] vertices;
+        List<VertexForA<int>> Walls = new List<VertexForA<int>>();
         public void createVertices(int width)
         {
             int startingX = 0;
@@ -91,6 +92,10 @@ namespace DikstraVisualizer
             YAmount = 22;
             XAmount = 32;
             vertices = new VertexForA<int>[YAmount,XAmount];
+
+            HeuristicsPicker.Items.Add("Manhattan");
+            HeuristicsPicker.Items.Add("Diagonal");
+            HeuristicsPicker.Items.Add("Euclidian");
         }
         
         private void Form1_Load(object sender, EventArgs e)
@@ -98,9 +103,7 @@ namespace DikstraVisualizer
             int width = 25;
             createVertices(width);
             createEdges();
-            ;
         }
-
         private void Picture_MouseClick(object sender, MouseEventArgs e)
         {
             Point savedCordsOfMouse = PointToClient(MousePosition); 
@@ -144,27 +147,32 @@ namespace DikstraVisualizer
                     StartPoint = curvertex;
                 }
             }
-            if(e.Button == MouseButtons.Right)
+            else if (e.Button == MouseButtons.Right)
             {
-                if(StartPoint != null && EndPoint != null)
+                
+                VertexForA<int> curvertex = new VertexForA<int>(-1, new Rectangle(-10, -10, -2, -2));
+                foreach (var vertex in vertices)
                 {
-                    List<VertexForA<int>> vertices = graph.AStarSearchAlgorithm(StartPoint, EndPoint);
-                    foreach(var vertex in vertices)
+                    if (vertex.Position.Contains(savedCordsOfMouse))
                     {
-                        if (vertex != StartPoint && vertex != EndPoint)
-                        {
-                            g.FillRectangle(Brushes.Gray, vertex.Position);
-                        }
+                        curvertex = vertex;
+                        break;
                     }
                 }
-                
+
+                if(curvertex != StartPoint && curvertex != EndPoint)
+                {
+                    g.FillRectangle(Brushes.Gray, curvertex.Position);
+                    g.DrawRectangle(Pens.Black, curvertex.Position);
+                    Walls.Add(curvertex);
+                }
             }
             Picture.Image = map;
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Up)
+            if(e.KeyCode == Keys.C)
             {
                 foreach (var vertex in vertices)
                 {
@@ -173,9 +181,30 @@ namespace DikstraVisualizer
                 }
                 StartPoint = null;
                 EndPoint = null;
-                Picture.Image = map;
+                
             }
-            
+            if (e.KeyCode == Keys.S)
+            {
+                if (StartPoint != null && EndPoint != null)
+                {
+                    List<VertexForA<int>> vertices = graph.AStarSearchAlgorithm(StartPoint, EndPoint,Walls);
+                    foreach (var vertex in vertices)
+                    {
+                        if (vertex != StartPoint && vertex != EndPoint)
+                        {
+                            g.FillRectangle(Brushes.Blue, vertex.Position);
+                        }
+                    }
+                }
+
+            }
+            Picture.Image = map;
+        }
+
+        private void HeuristicsPicker_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Dictionary<int, Func<int, int, int, int, int>> functions;
+           
         }
     }
 }

@@ -48,6 +48,7 @@ namespace DikstraVisualizer
     {
         public int Scalar;
         public int Scalar2;
+        
         #region GraphStuff
         private List<VertexForA<T>> vertices;
         #region
@@ -199,7 +200,7 @@ namespace DikstraVisualizer
             int dy = Math.Abs(nodeY - goalY);
             return (int)(Scalar * Math.Sqrt(dx * dx + dy * dy));
         }
-        public List<VertexForA<T>> AStarSearchAlgorithm(VertexForA<T> a, VertexForA<T> b)
+        public List<VertexForA<T>> AStarSearchAlgorithm(VertexForA<T> a, VertexForA<T> b, List<VertexForA<T>> walls,Action HeurType)
         {
             if(a == null | b == null | a == b | !ooga.booga | a.NeighborCount == 0)
             {
@@ -214,7 +215,7 @@ namespace DikstraVisualizer
             }
             a.CumlativeDistance = 0;
             
-            a.FinalDistance = a.CumlativeDistance + HeurDiagonal(a.Position.X,a.Position.Y,b.Position.X,b.Position.Y);
+            a.FinalDistance = a.CumlativeDistance + HeurEuclidean(a.Position.X,a.Position.Y,b.Position.X,b.Position.Y);
 
             PriorityQueue<VertexForA<T>, float> queue = new PriorityQueue<VertexForA<T>, float>();
             List<VertexForA<T>> list = new List<VertexForA<T>>();
@@ -233,7 +234,7 @@ namespace DikstraVisualizer
                     {
                         curEdge.EndingPoint.CumlativeDistance = tentativeDistance;
                         curEdge.EndingPoint.Founder = current;
-                        curEdge.EndingPoint.FinalDistance = curEdge.EndingPoint.CumlativeDistance + HeurDiagonal(curEdge.EndingPoint.Position.X, curEdge.EndingPoint.Position.Y,b.Position.X,b.Position.Y);
+                        curEdge.EndingPoint.FinalDistance = curEdge.EndingPoint.CumlativeDistance + HeurEuclidean(curEdge.EndingPoint.Position.X, curEdge.EndingPoint.Position.Y,b.Position.X,b.Position.Y);
                     }
                     if(!curEdge.EndingPoint.HasBeenVisited && !list.Contains(curEdge.EndingPoint))
                     {

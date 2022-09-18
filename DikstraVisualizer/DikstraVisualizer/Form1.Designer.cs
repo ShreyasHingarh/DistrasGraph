@@ -30,6 +30,7 @@
         {
             this.Background = new System.Windows.Forms.PictureBox();
             this.Picture = new System.Windows.Forms.PictureBox();
+            this.HeuristicsPicker = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.Background)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Picture)).BeginInit();
             this.SuspendLayout();
@@ -47,18 +48,31 @@
             this.Picture.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Picture.Location = new System.Drawing.Point(0, 0);
             this.Picture.Name = "Picture";
-            this.Picture.Size = new System.Drawing.Size(800, 550);
+            this.Picture.Size = new System.Drawing.Size(884, 550);
             this.Picture.TabIndex = 1;
             this.Picture.TabStop = false;
             this.Picture.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Picture_MouseClick);
+            // 
+            // HeuristicsPicker
+            // 
+            this.HeuristicsPicker.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.HeuristicsPicker.FormattingEnabled = true;
+            this.HeuristicsPicker.ImeMode = System.Windows.Forms.ImeMode.Disable;
+            this.HeuristicsPicker.Location = new System.Drawing.Point(799, 0);
+            this.HeuristicsPicker.Name = "HeuristicsPicker";
+            this.HeuristicsPicker.Size = new System.Drawing.Size(85, 23);
+            this.HeuristicsPicker.TabIndex = 2;
+            this.HeuristicsPicker.SelectedIndexChanged += new System.EventHandler(this.HeuristicsPicker_SelectedIndexChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 550);
+            this.ClientSize = new System.Drawing.Size(884, 550);
+            this.Controls.Add(this.HeuristicsPicker);
             this.Controls.Add(this.Picture);
             this.Controls.Add(this.Background);
+            this.KeyPreview = true;
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -73,5 +87,6 @@
 
         private PictureBox Background;
         private PictureBox Picture;
+        private ComboBox HeuristicsPicker;
     }
 }
