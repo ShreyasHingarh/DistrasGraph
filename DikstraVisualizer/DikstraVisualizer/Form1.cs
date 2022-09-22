@@ -13,6 +13,7 @@ namespace DikstraVisualizer
         VertexForA<int> EndPoint;
         VertexForA<int>[,] vertices;
         List<VertexForA<int>> Walls = new List<VertexForA<int>>();
+        int HeurIndex = -1;
         public void createVertices(int width)
         {
             int startingX = 0;
@@ -39,7 +40,8 @@ namespace DikstraVisualizer
         public void createEdges()
         {
           
-            int distance = 15;
+            float horDistance = 25;
+            float diaDistance = (float)Math.Sqrt(horDistance * horDistance * 2);
             
             for(int i = 0;i < YAmount;i++)
             {
@@ -47,35 +49,35 @@ namespace DikstraVisualizer
                 {
                     if (i - 1 > 0)
                     {
-                        graph.AddEdge(vertices[i,x], vertices[i - 1, x], distance);
+                        graph.AddEdge(vertices[i,x], vertices[i - 1, x], horDistance);
                     }
                     if (i + 1 < YAmount)
                     {
-                        graph.AddEdge(vertices[i, x], vertices[i + 1, x], distance);
+                        graph.AddEdge(vertices[i, x], vertices[i + 1, x], horDistance);
                     }
                     if (x - 1 > 0)
                     {
-                        graph.AddEdge(vertices[i, x], vertices[i, x - 1], distance);
+                        graph.AddEdge(vertices[i, x], vertices[i, x - 1], horDistance);
                     }
                     if (x + 1 < XAmount)
                     {
-                        graph.AddEdge(vertices[i, x], vertices[i, x + 1], distance);
+                        graph.AddEdge(vertices[i, x], vertices[i, x + 1], horDistance);
                     }
                     if(x - 1 > 0 && i + 1 < YAmount)
                     {
-                        graph.AddEdge(vertices[i, x], vertices[i + 1, x - 1], distance);
+                        graph.AddEdge(vertices[i, x], vertices[i + 1, x - 1], diaDistance);
                     }
                     if (x - 1 > 0 && i - 1 > 0)
                     {
-                        graph.AddEdge(vertices[i, x], vertices[i - 1, x - 1], distance);
+                        graph.AddEdge(vertices[i, x], vertices[i - 1, x - 1], diaDistance);
                     }
                     if (x + 1 < XAmount && i + 1 < YAmount)
                     {
-                        graph.AddEdge(vertices[i, x], vertices[i + 1, x + 1], distance);
+                        graph.AddEdge(vertices[i, x], vertices[i + 1, x + 1], diaDistance);
                     }
                     if (x + 1 < XAmount && i - 1 > 0)
                     {
-                        graph.AddEdge(vertices[i, x], vertices[i - 1, x + 1], distance);
+                        graph.AddEdge(vertices[i, x], vertices[i - 1, x + 1], diaDistance);
                     }
                 }
             }
@@ -87,7 +89,7 @@ namespace DikstraVisualizer
             InitializeComponent();
             map = new Bitmap(Picture.Width, Picture.Height);
             g = Graphics.FromImage(map);
-            graph = new GraphForAStar<int>(1, 1);
+            graph = new GraphForAStar<int>(1,1);
             Picture.Image = map;
             YAmount = 22;
             XAmount = 32;
@@ -98,6 +100,7 @@ namespace DikstraVisualizer
             HeuristicsPicker.Items.Add("Euclidian");
         }
         
+        // ,the edges are not good nothing draws,click and drag,add walls, check the astar funcs
         private void Form1_Load(object sender, EventArgs e)
         {
             int width = 25;
@@ -160,11 +163,21 @@ namespace DikstraVisualizer
                     }
                 }
 
-                if(curvertex != StartPoint && curvertex != EndPoint)
+                if(curvertex != StartPoint && curvertex != EndPoint )
                 {
-                    g.FillRectangle(Brushes.Gray, curvertex.Position);
-                    g.DrawRectangle(Pens.Black, curvertex.Position);
-                    Walls.Add(curvertex);
+                    if(!Walls.Contains(curvertex))
+                    {
+                        g.FillRectangle(Brushes.Gray, curvertex.Position);
+                        g.DrawRectangle(Pens.Black, curvertex.Position);
+                        Walls.Add(curvertex);
+                    }
+                    else
+                    {
+                        g.FillRectangle(Brushes.White, curvertex.Position);
+                        g.DrawRectangle(Pens.Black, curvertex.Position);
+                        Walls.Remove(curvertex);
+                    }
+                   
                 }
             }
             Picture.Image = map;
@@ -185,14 +198,18 @@ namespace DikstraVisualizer
             }
             if (e.KeyCode == Keys.S)
             {
-                if (StartPoint != null && EndPoint != null)
+                if(HeurIndex < 0)
                 {
-                    List<VertexForA<int>> vertices = graph.AStarSearchAlgorithm(StartPoint, EndPoint,Walls);
+                    MessageBox.Show("Choose a gosh diddily darn heuristic");
+                }
+                else if (StartPoint != null && EndPoint != null)
+                {
+                    List<VertexForA<int>> vertices = graph.AStarSearchAlgorithm(StartPoint, EndPoint,HeurIndex,g);
                     foreach (var vertex in vertices)
                     {
                         if (vertex != StartPoint && vertex != EndPoint)
                         {
-                            g.FillRectangle(Brushes.Blue, vertex.Position);
+                            g.FillRectangle(Brushes.Purple, vertex.Position);
                         }
                     }
                 }
@@ -203,8 +220,7 @@ namespace DikstraVisualizer
 
         private void HeuristicsPicker_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Dictionary<int, Func<int, int, int, int, int>> functions;
-           
+            HeurIndex = HeuristicsPicker.SelectedIndex;   
         }
     }
 }

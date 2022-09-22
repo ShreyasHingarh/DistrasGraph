@@ -48,7 +48,12 @@ namespace DikstraVisualizer
     {
         public int Scalar;
         public int Scalar2;
-        
+        static readonly Func<int, int, int, int, int,int,int>[] Funcs = new Func<int, int, int, int, int, int, int>[]
+        {
+            HeurManhattan,
+            HeurEuclidean,
+            HeurDiagonal
+        };
         #region GraphStuff
         private List<VertexForA<T>> vertices;
         #region
@@ -182,25 +187,25 @@ namespace DikstraVisualizer
         }
         #endregion GraphStuff
 
-        public int HeurManhattan(int nodeX,int nodeY,int goalX,int goalY)
+        public static int HeurManhattan(int nodeX,int nodeY,int goalX,int goalY, int Scalar,int Scalar2)
         {
             int dx = Math.Abs(nodeX - goalX);
             int dy = Math.Abs(-nodeY - goalY);
             return Scalar * (dx + dy);
         }
-        public int HeurDiagonal(int nodeX, int nodeY, int goalX, int goalY)
+        public static int HeurDiagonal(int nodeX, int nodeY, int goalX, int goalY, int Scalar,int Scalar2)
         {
             int dx = Math.Abs(nodeX - goalX);
             int dy = Math.Abs(nodeY - goalY);
-            return Scalar * (dx + dy) + (Scalar2 - 2 * Scalar) * Math.Min(dx,dy);
+            return Scalar * (dx + dy) + (Scalar2 - 2 * Scalar2) * Math.Min(dx,dy);
         }
-        public int HeurEuclidean(int nodeX, int nodeY, int goalX, int goalY)
+        public static int HeurEuclidean(int nodeX, int nodeY, int goalX, int goalY, int Scalar,int Scalar2)
         {
             int dx = Math.Abs(nodeX - goalX);
             int dy = Math.Abs(nodeY - goalY);
             return (int)(Scalar * Math.Sqrt(dx * dx + dy * dy));
         }
-        public List<VertexForA<T>> AStarSearchAlgorithm(VertexForA<T> a, VertexForA<T> b, List<VertexForA<T>> walls,Action HeurType)
+        public List<VertexForA<T>> AStarSearchAlgorithm(VertexForA<T> a, VertexForA<T> b,int HeurType,Graphics g)
         {
             if(a == null | b == null | a == b | !ooga.booga | a.NeighborCount == 0)
             {
@@ -215,7 +220,7 @@ namespace DikstraVisualizer
             }
             a.CumlativeDistance = 0;
             
-            a.FinalDistance = a.CumlativeDistance + HeurEuclidean(a.Position.X,a.Position.Y,b.Position.X,b.Position.Y);
+            a.FinalDistance = a.CumlativeDistance + Funcs[HeurType](a.Position.X,a.Position.Y,b.Position.X,b.Position.Y,Scalar,Scalar2);
 
             PriorityQueue<VertexForA<T>, float> queue = new PriorityQueue<VertexForA<T>, float>();
             List<VertexForA<T>> list = new List<VertexForA<T>>();
@@ -234,16 +239,25 @@ namespace DikstraVisualizer
                     {
                         curEdge.EndingPoint.CumlativeDistance = tentativeDistance;
                         curEdge.EndingPoint.Founder = current;
-                        curEdge.EndingPoint.FinalDistance = curEdge.EndingPoint.CumlativeDistance + HeurEuclidean(curEdge.EndingPoint.Position.X, curEdge.EndingPoint.Position.Y,b.Position.X,b.Position.Y);
+                        curEdge.EndingPoint.FinalDistance = curEdge.EndingPoint.CumlativeDistance + Funcs[HeurType](curEdge.EndingPoint.Position.X, curEdge.EndingPoint.Position.Y,b.Position.X,b.Position.Y,Scalar,Scalar2);
                     }
                     if(!curEdge.EndingPoint.HasBeenVisited && !list.Contains(curEdge.EndingPoint))
                     {
                         queue.Enqueue(curEdge.EndingPoint,curEdge.EndingPoint.FinalDistance);
+                        if(curEdge.EndingPoint != a && curEdge.EndingPoint != b)
+                        { 
+                            g.FillRectangle(Brushes.LightGreen, curEdge.EndingPoint.Position);
+                            g.DrawRectangle(Pens.Black, curEdge.EndingPoint.Position);
+                        }
                         list.Add(curEdge.EndingPoint);
                     }
                 }
                 current.HasBeenVisited = true;
-
+                if (current != a && current != b)
+                {
+                    g.FillRectangle(Brushes.LightBlue, current.Position);
+                    g.DrawRectangle(Pens.Black, current.Position);
+                }
             }
             List<VertexForA<T>> verticesVisited = new List<VertexForA<T>>();
             VertexForA<T> ToAdd = b;
