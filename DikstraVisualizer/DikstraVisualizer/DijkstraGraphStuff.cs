@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DikstraVisualizer
 {
-    
+    /*
     //public class Edge<T>
     //{
     //    public Vertex<T> StartingPoint { get; set; }
@@ -220,5 +220,6 @@ namespace DikstraVisualizer
     //        return verticesVisited;
     //    }
     //}
+    */
 
 }
