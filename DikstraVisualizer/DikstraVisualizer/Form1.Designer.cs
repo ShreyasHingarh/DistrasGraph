@@ -28,9 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.Background = new System.Windows.Forms.PictureBox();
             this.Picture = new System.Windows.Forms.PictureBox();
             this.HeuristicsPicker = new System.Windows.Forms.ComboBox();
+            this.Directions = new System.Windows.Forms.TextBox();
+            this.PrevWalls = new System.Windows.Forms.Button();
+            
             ((System.ComponentModel.ISupportInitialize)(this.Background)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Picture)).BeginInit();
             this.SuspendLayout();
@@ -64,11 +68,33 @@
             this.HeuristicsPicker.TabIndex = 2;
             this.HeuristicsPicker.SelectedIndexChanged += new System.EventHandler(this.HeuristicsPicker_SelectedIndexChanged);
             // 
+            // Directions
+            // 
+            this.Directions.Location = new System.Drawing.Point(799, 58);
+            this.Directions.MaximumSize = new System.Drawing.Size(120, 120);
+            this.Directions.Name = "Directions";
+            this.Directions.ReadOnly = true;
+            this.Directions.Size = new System.Drawing.Size(100, 23);
+            this.Directions.TabIndex = 3;
+            // 
+            // PrevWalls
+            // 
+            this.PrevWalls.Location = new System.Drawing.Point(809, 111);
+            this.PrevWalls.Name = "PrevWalls";
+            this.PrevWalls.Size = new System.Drawing.Size(75, 47);
+            this.PrevWalls.TabIndex = 4;
+            this.PrevWalls.Text = "Paste Prev walls";
+            this.PrevWalls.UseVisualStyleBackColor = true;
+            this.PrevWalls.Click += new System.EventHandler(this.PrevWalls_Click);
+           
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(884, 550);
+            this.Controls.Add(this.PrevWalls);
+            this.Controls.Add(this.Directions);
             this.Controls.Add(this.HeuristicsPicker);
             this.Controls.Add(this.Picture);
             this.Controls.Add(this.Background);
@@ -80,6 +106,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.Background)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Picture)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -88,5 +115,7 @@
         private PictureBox Background;
         private PictureBox Picture;
         private ComboBox HeuristicsPicker;
+        private TextBox Directions;
+        private Button PrevWalls;
     }
 }

@@ -11,6 +11,8 @@ namespace DikstraVisualizer
     {
         public int Scalar;
         public int Scalar2;
+        
+        
         static readonly Func<int, int, int, int, int,int,int>[] Funcs = new Func<int, int, int, int, int, int, int>[]
         {
             HeurManhattan,
@@ -22,6 +24,7 @@ namespace DikstraVisualizer
         {
             Scalar = scalar;
             Scalar2 = scalar2;
+            
         }
       
         public static int HeurManhattan(int nodeX,int nodeY,int goalX,int goalY, int Scalar,int Scalar2)
@@ -44,7 +47,7 @@ namespace DikstraVisualizer
         }
         public List<Vertex<T>> AStarSearchAlgorithm(Vertex<T> a, Vertex<T> b,int HeurType,Graphics g)
         {
-            if(a == null | b == null | a == b | a.NeighborCount == 0)
+            if(a == null || b == null || a == b || a.NeighborCount == 0)
             {
                 return null;
             }
@@ -85,20 +88,24 @@ namespace DikstraVisualizer
                         { 
                             g.FillRectangle(Brushes.LightGreen, curEdge.EndingPoint.Position);
                             g.DrawRectangle(Pens.Black, curEdge.EndingPoint.Position);
+                            
                         }
                         list.Add(curEdge.EndingPoint);
                     }
                 }
+                
                 current.HasBeenVisited = true;
                 if (current != a && current != b && vertices.Contains(current))
                 {
                     g.FillRectangle(Brushes.LightBlue, current.Position);
                     g.DrawRectangle(Pens.Black, current.Position);
+                    
                 }
             }
             List<Vertex<T>> verticesVisited = new List<Vertex<T>>();
             Vertex<T> ToAdd = b;
-            while (!verticesVisited.Contains(a))
+
+            while (!verticesVisited.Contains(a) && ToAdd != null&& ToAdd.Founder != null)
             {
                 verticesVisited.Add(ToAdd);
                 ToAdd = ToAdd.Founder;

@@ -80,6 +80,17 @@ namespace DikstraVisualizer
 
             return true;
         }
+        public bool RemoveEdge(Edge<T> edge)
+        {
+            if (edge == null)
+            {
+                return false;
+            }
+            edge.StartingPoint.Neighbors.Remove(edge);
+            edges.Remove(edge);
+
+            return true;
+        }
         public int SearchForVertexIndex(T value)
         {
             for (int i = 0; i < vertices.Count; i++)

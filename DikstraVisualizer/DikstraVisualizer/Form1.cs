@@ -6,156 +6,49 @@ namespace DikstraVisualizer
 {
     public partial class Form1 : Form
     {
-        GraphForAStar<int> graph;
+       
         Bitmap map;
         Graphics g;
-        int YAmount;
-        int XAmount;
+        
         Vertex<int> StartPoint;
         Vertex<int> EndPoint;
-        Vertex<int>[,] GridOfVertecies;
-        List<Edge<int>> EdgesOfAllVertices;
+        CreateGraphVisualizer visualizer;
+        List<int> wallsValues;
+
         int HeurIndex = -1;
-        int width = 25;
+       
         bool hasRan = false;
-        public void createGridOfVertices(int width)
-        {
-            int startingX = 0;
-            int startingY = 0;
-
-            int count = 0;
-            for (int i = 0; i < YAmount; i++)
-            {
-                for (int x = 0; x < XAmount; x++)
-                {
-                    Vertex<int> temp = new Vertex<int>(count, new Rectangle(startingX, startingY, width, width));
-                    graph.AddVertex(temp);
-                    g.FillRectangle(Brushes.White, startingX, startingY, width, width);
-                    g.DrawRectangle(Pens.Black,startingX, startingY, width, width);
-                    GridOfVertecies[i, x] = temp;
-                    count++;
-                    startingX += width;
-                    
-                }
-                startingX = 0;
-                startingY += width;
-            }
-        }
-        private void compareForTheGreater(bool isYorX,int ypos,int xpos, int highAmount,int horDistance)
-        {
-            int posToChance = isYorX ? xpos : ypos;
-            if (posToChance + 1 < highAmount)
-            {
-                Edge<int> temp;
-                if(posToChance == ypos)
-                {
-                    graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos + 1, xpos], horDistance);
-                    temp = graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos + 1, xpos]);
-                }
-                else if(posToChance == xpos)
-                {
-                    graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos, xpos + 1], horDistance);
-                    temp = graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos, xpos + 1]);
-                }
-                if (!EdgesOfAllVertices.Contains(temp))
-                {
-                    EdgesOfAllVertices.Add(graph.edges[graph.edges.Count - 1]);
-                }
-            }
-
-        }
-        public void CreateEdgesForAVertex(int xpos,int ypos)
-        { 
-            float horDistance = 25;
-            float diaDistance = (float)Math.Sqrt(horDistance * horDistance * 2);
-            
-            if (ypos - 1 >= 0)
-            {
-                graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos - 1, xpos], horDistance);
-                Edge<int> temp = graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos - 1, xpos]);
-                if (!EdgesOfAllVertices.Contains(temp))
-                {
-                    EdgesOfAllVertices.Add(graph.edges[graph.edges.Count - 1]);
-                }
-            }
-            if (ypos+ 1 < YAmount)
-            {
-                graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos + 1, xpos], horDistance);
-                Edge<int> temp = graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos + 1, xpos]);
-                if (!EdgesOfAllVertices.Contains(temp))
-                {
-                    EdgesOfAllVertices.Add(graph.edges[graph.edges.Count - 1]);
-                }
-                
-            }
-            if (xpos - 1 >= 0)
-            {
-                graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos, xpos - 1], horDistance);
-                Edge<int> temp = graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos, xpos - 1]);
-                if (!EdgesOfAllVertices.Contains(temp))
-                {
-                    EdgesOfAllVertices.Add(graph.edges[graph.edges.Count - 1]);
-                }
-            }
-            if (xpos + 1 < XAmount)
-            {
-                graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos, xpos + 1], horDistance);
-                EdgesOfAllVertices.Add(graph.edges[graph.edges.Count - 1]);
-            }
-
-            if (xpos - 1 >= 0 && ypos + 1 < YAmount)
-            {
-                graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos + 1, xpos - 1], diaDistance);
-                EdgesOfAllVertices.Add(graph.edges[graph.edges.Count - 1]);
-            }
-            if (xpos - 1 >= 0 && ypos - 1 >= 0)
-            {
-                graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos - 1, xpos - 1], diaDistance);
-                EdgesOfAllVertices.Add(graph.edges[graph.edges.Count - 1]);
-            }
-            if (xpos + 1 < XAmount && ypos + 1 < YAmount)
-            {
-                graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos + 1, xpos + 1], diaDistance);
-                EdgesOfAllVertices.Add(graph.edges[graph.edges.Count - 1]);
-            }
-            if (xpos + 1 < XAmount && ypos - 1 >= 0)
-            {
-                graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos - 1, xpos + 1], diaDistance);
-                EdgesOfAllVertices.Add(graph.edges[graph.edges.Count - 1]);
-            }
-        }
-        public void createEdgesForGrid()
-        {
-            for(int i = 0;i < YAmount;i++)
-            {
-                for (int x = 0; x < XAmount; x++)
-                {
-                    CreateEdgesForAVertex(x, i);
-                }
-            }
-        }
+        
       
+        public Vertex<int> FindVertexBasedOnMouse(Point savedCordsOfMouse)
+        {
+          
+            foreach (var vertex in visualizer.GridOfVertecies)
+            {
+                if (vertex.Position.Contains(savedCordsOfMouse))
+                {
+                    return vertex;
+                }
+            }
+            return null;
+        }
         public Form1()
         {
             InitializeComponent();
             map = new Bitmap(Picture.Width, Picture.Height);
             g = Graphics.FromImage(map);
-            graph = new GraphForAStar<int>(1,1);
-            Picture.Image = map;
-
-            YAmount = 22;
-            XAmount = 32;
-            GridOfVertecies = new Vertex<int>[YAmount,XAmount];
-            EdgesOfAllVertices = new List<Edge<int>>();
-
+            wallsValues = new List<int>();
+            visualizer = new CreateGraphVisualizer(22,32,25);
             HeuristicsPicker.Items.Add("Manhattan");
             HeuristicsPicker.Items.Add("Diagonal");
             HeuristicsPicker.Items.Add("Euclidian");
-            createGridOfVertices(width);
-            createEdgesForGrid();
+            visualizer.createGridOfVertices(g);
+            visualizer.createEdgesForGrid();
+            Directions.Text = "C,D,E,S";
+            Picture.Image = map;
         }
         
-        //add walls
+        //add sand, mud, make animated
         private void Form1_Load(object sender, EventArgs e)
         {
             
@@ -166,7 +59,7 @@ namespace DikstraVisualizer
             if (e.Button == MouseButtons.Left && !hasRan)
             {
                 Vertex<int> curvertex = new Vertex<int>(-1,new Rectangle(-10,-10,-2,-2));
-                foreach (var vertex in graph.vertices)
+                foreach (var vertex in visualizer.Graph.vertices)
                 {
                     if(vertex.Position.Contains(savedCordsOfMouse))
                     {
@@ -214,13 +107,14 @@ namespace DikstraVisualizer
             if (e.KeyCode == Keys.C)
             {
                 g.Clear(Color.White);
-                int totalNumberVertices = graph.VertexCount;
+                int totalNumberVertices = visualizer.Graph.VertexCount;
                 for (int i = 0; i < totalNumberVertices; i++)
                 {
-                    graph.RemoveVertex(graph.vertices[0]);
+                    visualizer.Graph.RemoveVertex(visualizer.Graph.vertices[0]);
                 }
-                createGridOfVertices(width);
-                createEdgesForGrid();
+                ;
+                visualizer.createGridOfVertices(g);
+                visualizer.createEdgesForGrid();
                 StartPoint = null;
                 EndPoint = null;
                 hasRan = false;
@@ -235,37 +129,38 @@ namespace DikstraVisualizer
                 else if (StartPoint != null && EndPoint != null)
                 {
                     hasRan = true;
-                    List<Vertex<int>> vertices = graph.AStarSearchAlgorithm(StartPoint, EndPoint, HeurIndex, g);
-                    foreach (var vertex in vertices)
+                    List<Vertex<int>> vertices =visualizer.Graph.AStarSearchAlgorithm(StartPoint, EndPoint, HeurIndex, g);
+                    if (vertices.Count == 0)
                     {
-                        if (vertex != StartPoint && vertex != EndPoint)
+                        MessageBox.Show("no possible path to endingpoint");
+                    }
+                    else
+                    {
+                        foreach (var vertex in vertices)
                         {
-                            g.FillRectangle(Brushes.Purple, vertex.Position);
+                            if (vertex != StartPoint && vertex != EndPoint)
+                            {
+                                g.FillRectangle(Brushes.Purple, vertex.Position);
+                            }
                         }
                     }
+                    
                 }
 
             }
             //draw walls
             else if (e.KeyCode == Keys.D && !hasRan)
             {
-                Vertex<int> Vertex = new Vertex<int>(-1, new Rectangle(-10, -10, -2, -2));
-                foreach (var vertex in GridOfVertecies)
-                {
-                    if (vertex.Position.Contains(savedCordsOfMouse))
-                    {
-                        Vertex = vertex;
-                        break;
-                    }
-                }
-
+                Vertex<int> Vertex = FindVertexBasedOnMouse(savedCordsOfMouse);
 
                 if (Vertex != StartPoint && Vertex != EndPoint)
                 {
-                    if (graph.vertices.Contains(Vertex))
-                    {
+                    if (visualizer.Graph.vertices.Contains(Vertex))
+                    {  
                         g.FillRectangle(Brushes.Gray, Vertex.Position);
                         g.DrawRectangle(Pens.Black, Vertex.Position);
+                        visualizer.Graph.RemoveVertex(Vertex);
+                        wallsValues.Add(Vertex.Value);
                     }
                     
                 }
@@ -273,38 +168,41 @@ namespace DikstraVisualizer
             // erase walls
             else if (e.KeyCode == Keys.E && !hasRan)
             {
-                Vertex<int> Vertex = new Vertex<int>(-1, new Rectangle(-10, -10, -2, -2));
-                foreach (var vertex in GridOfVertecies)
-                {
-                    if (vertex.Position.Contains(savedCordsOfMouse))
-                    {
-                        Vertex = vertex;
-                        break;
-                    }
-                }
 
-                if (Vertex != StartPoint && Vertex != EndPoint && !graph.vertices.Contains(Vertex))
+                Vertex<int> Vertex = FindVertexBasedOnMouse(savedCordsOfMouse);
+                if (Vertex != StartPoint && Vertex != EndPoint && !visualizer.Graph.vertices.Contains(Vertex))
                 {
                     g.FillRectangle(Brushes.White, Vertex.Position);
                     g.DrawRectangle(Pens.Black, Vertex.Position);
                 
-                    int i = 0;
-                    int x = 0;
-                    for(i = 0;i < YAmount;i++)
+                    for(int i = 0;i < visualizer.YAmount;i++)
                     {
-                        for(x = 0;x < XAmount;x++)
+                        for(int x = 0;x < visualizer.XAmount;x++)
                         {
-                            if (GridOfVertecies[i, x] == Vertex)
+                            if (visualizer.GridOfVertecies[i, x] == Vertex)
                             {
+                                visualizer.Graph.AddVertex(Vertex);
+                                visualizer.CreateEdgesForAVertex(x, i);
+                                visualizer.CreateEdgesForAVertex(x - 1, i - 1);
+                                visualizer.CreateEdgesForAVertex(x - 1, i);
+                                visualizer.CreateEdgesForAVertex(x - 1, i + 1);
+                                visualizer.CreateEdgesForAVertex(x, i + 1);
+                                visualizer.CreateEdgesForAVertex(x + 1, i + 1);
+                                visualizer.CreateEdgesForAVertex(x + 1, i);
+                                visualizer.CreateEdgesForAVertex(x + 1, i - 1);
+                                visualizer.CreateEdgesForAVertex(x, i - 1);
                                 break;
                             }
                         }
+                        wallsValues.Remove(Vertex.Value);
                     }
-                    CreateEdgesForAVertex(x,i);
+                    
+                    
+                    
                 }
                
             }
-                Picture.Image = map;
+            Picture.Image = map;
             
         }
 
@@ -313,5 +211,30 @@ namespace DikstraVisualizer
             HeurIndex = HeuristicsPicker.SelectedIndex;   
         }
 
+        private void PrevWalls_Click(object sender, EventArgs e)
+        {
+            if(wallsValues.Count == 0)
+            {
+                return;
+            }
+            foreach(var value in wallsValues)
+            {
+                if (visualizer.Graph.vertices.Contains(visualizer.Graph.Search(value)))
+                {
+                    if (visualizer.Graph.Search(value) != StartPoint && visualizer.Graph.Search(value) != EndPoint)
+                    {
+                        if (visualizer.Graph.vertices.Contains(visualizer.Graph.Search(value)))
+                        {
+                            g.FillRectangle(Brushes.Gray, visualizer.Graph.Search(value).Position);
+                            g.DrawRectangle(Pens.Black, visualizer.Graph.Search(value).Position);
+                            visualizer.Graph.RemoveVertex(visualizer.Graph.Search(value));
+                        }
+                    }
+                }
+            }
+            Picture.Image = map;
+        }
+
+       
     }
 }
