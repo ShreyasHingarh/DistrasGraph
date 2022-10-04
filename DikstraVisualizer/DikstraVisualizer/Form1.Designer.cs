@@ -34,7 +34,7 @@
             this.HeuristicsPicker = new System.Windows.Forms.ComboBox();
             this.Directions = new System.Windows.Forms.TextBox();
             this.PrevWalls = new System.Windows.Forms.Button();
-            
+            this.SearchTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.Background)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Picture)).BeginInit();
             this.SuspendLayout();
@@ -86,7 +86,11 @@
             this.PrevWalls.Text = "Paste Prev walls";
             this.PrevWalls.UseVisualStyleBackColor = true;
             this.PrevWalls.Click += new System.EventHandler(this.PrevWalls_Click);
-           
+            // 
+            // SearchTimer
+            // 
+            this.SearchTimer.Interval = 20;
+            this.SearchTimer.Tick += new System.EventHandler(this.SearchTimer_Tick);
             // 
             // Form1
             // 
@@ -117,5 +121,6 @@
         private ComboBox HeuristicsPicker;
         private TextBox Directions;
         private Button PrevWalls;
+        private System.Windows.Forms.Timer SearchTimer;
     }
 }
