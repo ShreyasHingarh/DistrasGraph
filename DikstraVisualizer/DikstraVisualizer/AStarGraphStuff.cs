@@ -29,7 +29,8 @@ namespace DikstraVisualizer
         {
             HeurManhattan,
             HeurEuclidean,
-            HeurDiagonal
+            HeurOctile,
+            HeurChebyshev
         };
 
         public GraphForAStar(int scalar, int scalar2)
@@ -48,11 +49,17 @@ namespace DikstraVisualizer
             int dy = Math.Abs(nodeY - goalY);
             return Scalar * (dx + dy);
         }
-        public static int HeurDiagonal(int nodeX, int nodeY, int goalX, int goalY, int Scalar, int Scalar2)
+        public static int HeurChebyshev(int nodeX, int nodeY, int goalX, int goalY, int Scalar, int Scalar2)
         {
             int dx = Math.Abs(nodeX - goalX);
             int dy = Math.Abs(nodeY - goalY);
-            return Scalar * (dx + dy) + (Scalar2 - 2 * Scalar2) * Math.Min(dx, dy);
+            return Scalar * (dx + dy) + (Scalar2 - 2 * Scalar) * Math.Min(dx, dy);
+        }
+        public static int HeurOctile(int nodeX, int nodeY, int goalX, int goalY, int Scalar, int Scalar2)
+        {
+            int dx = Math.Abs(nodeX - goalX);
+            int dy = Math.Abs(nodeY - goalY);
+            return Scalar * (dx + dy) + (int)(Math.Sqrt(2) - 2 * Scalar) * Math.Min(dx, dy);
         }
         public static int HeurEuclidean(int nodeX, int nodeY, int goalX, int goalY, int Scalar, int Scalar2)
         {

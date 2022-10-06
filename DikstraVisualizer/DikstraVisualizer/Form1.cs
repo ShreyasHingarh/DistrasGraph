@@ -16,8 +16,8 @@ namespace DikstraVisualizer
         List<int> wallsValues;
 
         int HeurIndex = -1;
-        bool didnotfinish = true;
         bool hasRan = false;
+        bool hasfinished = false;
         public Vertex<int> FindVertexBasedOnMouse(Point savedCordsOfMouse)
         {
             foreach (var vertex in visualizer.GridOfVertecies)
@@ -55,7 +55,8 @@ namespace DikstraVisualizer
             wallsValues = new List<int>();
             visualizer = new CreateGraphVisualizer(22, 32, 25);
             HeuristicsPicker.Items.Add("Manhattan");
-            HeuristicsPicker.Items.Add("Diagonal");
+            HeuristicsPicker.Items.Add("Chebyshev");
+            HeuristicsPicker.Items.Add("Octile");
             HeuristicsPicker.Items.Add("Euclidian");
             visualizer.createGridOfVertices(g);
             visualizer.createEdgesForGrid();
@@ -132,6 +133,8 @@ namespace DikstraVisualizer
                 StartPoint = null;
                 EndPoint = null;
                 hasRan = false;
+                hasfinished = false;
+                SearchTimer.Enabled = false;
             }
             //start the search
             else if (e.KeyCode == Keys.S && !hasRan)
@@ -239,10 +242,10 @@ namespace DikstraVisualizer
             Information info;
             SearchTimer.Enabled = visualizer.Graph.MainAStarPart(StartPoint, EndPoint, HeurIndex, out info);
             if (info.Position == StartPoint.Position || info.Position == EndPoint.Position) return;
-            Brush brush = Brushes.LightBlue;
+            Brush brush = Brushes.LightGreen;
             if (info.result == Result.Dequeue)
             {
-                brush = Brushes.LightGreen;
+                brush = Brushes.LightBlue;
             }
             g.FillRectangle(brush, info.Position);
             g.DrawRectangle(Pens.Black, info.Position);
@@ -252,6 +255,39 @@ namespace DikstraVisualizer
                 EndOfSearch(visualizer.Graph.EndingAStar(StartPoint, EndPoint));
             }
             Picture.Image = map;
+        }
+        private void OneIteration_Click(object sender, EventArgs e)
+        {
+            
+            if (StartPoint == null || EndPoint == null || HeurIndex < 0 || hasfinished) return;
+            if (!hasRan)
+            {
+                hasRan = true;
+                visualizer.Graph.SetupAStar(StartPoint, EndPoint, HeurIndex);
+            }
+            int i = 0;
+            bool result = true;
+            while (i < 10)
+            {
+                Information info;
+                result = visualizer.Graph.MainAStarPart(StartPoint, EndPoint, HeurIndex, out info);
+                if (info.Position == StartPoint.Position || info.Position == EndPoint.Position) return;
+                Brush brush = Brushes.LightBlue;
+                if (info.result == Result.Enqueue)
+                {
+                    brush = Brushes.LightGreen;
+                }
+                g.FillRectangle(brush, info.Position);
+                g.DrawRectangle(Pens.Black, info.Position);
+
+                Picture.Image = map;
+                i++;
+            }
+            if (result == false)
+            {
+                hasfinished = true;
+                EndOfSearch(visualizer.Graph.EndingAStar(StartPoint, EndPoint));
+            }
         }
     }
 }

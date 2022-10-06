@@ -35,6 +35,7 @@
             this.Directions = new System.Windows.Forms.TextBox();
             this.PrevWalls = new System.Windows.Forms.Button();
             this.SearchTimer = new System.Windows.Forms.Timer(this.components);
+            this.OneIteration = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.Background)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Picture)).BeginInit();
             this.SuspendLayout();
@@ -92,11 +93,22 @@
             this.SearchTimer.Interval = 20;
             this.SearchTimer.Tick += new System.EventHandler(this.SearchTimer_Tick);
             // 
+            // OneIteration
+            // 
+            this.OneIteration.Location = new System.Drawing.Point(809, 203);
+            this.OneIteration.Name = "OneIteration";
+            this.OneIteration.Size = new System.Drawing.Size(75, 59);
+            this.OneIteration.TabIndex = 5;
+            this.OneIteration.Text = "For One Iteration of Finder";
+            this.OneIteration.UseVisualStyleBackColor = true;
+            this.OneIteration.Click += new System.EventHandler(this.OneIteration_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(884, 550);
+            this.Controls.Add(this.OneIteration);
             this.Controls.Add(this.PrevWalls);
             this.Controls.Add(this.Directions);
             this.Controls.Add(this.HeuristicsPicker);
@@ -122,5 +134,6 @@
         private TextBox Directions;
         private Button PrevWalls;
         private System.Windows.Forms.Timer SearchTimer;
+        private Button OneIteration;
     }
 }
