@@ -12,7 +12,7 @@ namespace DikstraVisualizer
         public int YAmount;
         public int XAmount;
         public Vertex<int>[,] GridOfVertecies;
-        public List<Edge<int>> EdgesOfAllVertices;
+       
         public int Width;
 
         public CreateGraphVisualizer( int yAmount, int xAmount, int width)
@@ -21,7 +21,7 @@ namespace DikstraVisualizer
             YAmount = yAmount;
             XAmount = xAmount;
             GridOfVertecies = new Vertex<int>[YAmount, XAmount];
-            EdgesOfAllVertices = new List<Edge<int>>();
+            
             Width = width;
         }
 
@@ -48,32 +48,20 @@ namespace DikstraVisualizer
                 startingY += Width;
             }
         }
-
-        private void WhenContain(Edge<int> temp)
-        {
-            if (!EdgesOfAllVertices.Contains(temp))
-            {
-                EdgesOfAllVertices.Add(Graph.edges[Graph.edges.Count - 1]);
-            }
-        }
         private void compareForTheGreater(bool isForX, int ypos, int xpos, int yamount, int xamount, float horDistance)
         {
             int posToChance = isForX ? xpos : ypos;
             int amountToChance = isForX ? xamount : yamount;
             if (posToChance + 1 < amountToChance)
             {
-                Edge<int> temp = new Edge<int>(null, null, -1);
                 if (!isForX)
                 {
                     Graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos + 1, xpos], horDistance);
-                    temp = Graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos + 1, xpos]);
                 }
                 else
                 {
                     Graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos, xpos + 1], horDistance);
-                    temp = Graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos, xpos + 1]);
                 }
-                WhenContain(temp);
             }
 
         }
@@ -82,49 +70,41 @@ namespace DikstraVisualizer
             int posToChance = isForX ? xpos : ypos;
             if (posToChance - 1 >= 0)
             {
-                Edge<int> temp = new Edge<int>(null,null,-1);
-
                 if (!isForX)
                 {
                     Graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos - 1, xpos], horDistance);
-                    temp = Graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos - 1, xpos]);
                 }
                 else
                 {
                     Graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos, xpos - 1], horDistance);
-                    temp = Graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos, xpos - 1]);
                 }
-                WhenContain(temp);
             }
         }
-        private void GetDiagonalEdges(int xpos, int ypos, float diaDistance)
+        public void GetDiagonalEdges(int xpos, int ypos, float diaDistance)
         {
             if (xpos - 1 >= 0 && ypos + 1 < YAmount)
             {
                 Graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos + 1, xpos - 1], diaDistance);
-                WhenContain(Graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos + 1, xpos - 1]));
+                
             }
             if (xpos - 1 >= 0 && ypos - 1 >= 0)
             {
                 Graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos - 1, xpos - 1], diaDistance);
-                WhenContain(Graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos - 1, xpos - 1]));
             }
             if (xpos + 1 < XAmount && ypos + 1 < YAmount)
             {
                 Graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos + 1, xpos + 1], diaDistance);
-                WhenContain(Graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos + 1, xpos + 1]));
             }
             if (xpos + 1 < XAmount && ypos - 1 >= 0)
             {
                 Graph.AddEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos - 1, xpos + 1], diaDistance);
-                WhenContain(Graph.GetEdge(GridOfVertecies[ypos, xpos], GridOfVertecies[ypos - 1, xpos + 1]));
             }
         }
         public void CreateEdgesForAVertex(int xpos, int ypos)
         {
             if (xpos < 0 || xpos >= XAmount || ypos < 0 || ypos >= YAmount) return;
-            float horDistance = 25;
-            float diaDistance = (float)Math.Sqrt(horDistance * horDistance * 2);
+            float horDistance = 1;
+            float diaDistance = (float)Math.Sqrt(2) * horDistance;
 
             compareForTheLower(true, ypos, xpos, horDistance);
             compareForTheLower(false, ypos, xpos, horDistance);

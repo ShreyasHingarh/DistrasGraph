@@ -75,17 +75,19 @@ namespace DikstraVisualizer
             return new Information(Result.Dequeue, current.Position);
 
         }
-        private void HelperOne(float tentativeDistance, int HeurType,Edge<T> curEdge,Vertex<T> b)
+        private void HelperOne(float tentativeDistance, int HeurType, Edge<T> curEdge, Vertex<T> b)
         {
             curEdge.EndingPoint.CumlativeDistance = tentativeDistance;
-            curEdge.EndingPoint.Founder = current;
             curEdge.EndingPoint.FinalDistance = curEdge.EndingPoint.CumlativeDistance + Funcs[HeurType](curEdge.EndingPoint.Position.X, curEdge.EndingPoint.Position.Y, b.Position.X, b.Position.Y, Scalar, Scalar2);
-        }
 
+            curEdge.EndingPoint.Founder = current;
+
+        }
         public bool MainAStarPart(Vertex<T> a, Vertex<T> b, int HeurType, out Information info)
         {
-            if (Queue.Count != 0 && !b.HasBeenVisited)
+            if (!b.HasBeenVisited)
             {
+                
                 if (Index >= current.NeighborCount)
                 {
                     info = WhenDequeue();
@@ -118,14 +120,19 @@ namespace DikstraVisualizer
                     {
                         Index++;
                     }
-                    HelperOne(tentativeDistance, HeurType, curEdge, b);
+                    if(tentativeDistance < curEdge.EndingPoint.CumlativeDistance)
+                    {
+                        HelperOne(tentativeDistance, HeurType, curEdge, b);
+                    }
+                   
                     Queue.Enqueue(curEdge.EndingPoint, curEdge.EndingPoint.FinalDistance);
                     list.Add(curEdge.EndingPoint);
                     info = new Information(Result.Enqueue, curEdge.EndingPoint.Position);
-
+                   
                     return true;
                 }
                 
+
             }
             info = new Information();
             return false;
@@ -150,7 +157,7 @@ namespace DikstraVisualizer
             Queue = new PriorityQueue<Vertex<T>, float>();
             list = new List<Vertex<T>>();
 
-            Queue.Enqueue(a, a.FinalDistance);
+            //Queue.Enqueue(a, a.FinalDistance);
             list.Add(a);
             current = a;
             return true;

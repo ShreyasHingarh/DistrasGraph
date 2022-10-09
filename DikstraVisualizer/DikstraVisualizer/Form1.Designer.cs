@@ -36,6 +36,7 @@
             this.PrevWalls = new System.Windows.Forms.Button();
             this.SearchTimer = new System.Windows.Forms.Timer(this.components);
             this.OneIteration = new System.Windows.Forms.Button();
+            this.UseDiagonals = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.Background)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Picture)).BeginInit();
             this.SuspendLayout();
@@ -103,11 +104,23 @@
             this.OneIteration.UseVisualStyleBackColor = true;
             this.OneIteration.Click += new System.EventHandler(this.OneIteration_Click);
             // 
+            // UseDiagonals
+            // 
+            this.UseDiagonals.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.UseDiagonals.FormattingEnabled = true;
+            this.UseDiagonals.ImeMode = System.Windows.Forms.ImeMode.Disable;
+            this.UseDiagonals.Location = new System.Drawing.Point(809, 290);
+            this.UseDiagonals.Name = "UseDiagonals";
+            this.UseDiagonals.Size = new System.Drawing.Size(75, 23);
+            this.UseDiagonals.TabIndex = 6;
+            this.UseDiagonals.SelectedIndexChanged += new System.EventHandler(this.UseDiagonal_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(884, 550);
+            this.Controls.Add(this.UseDiagonals);
             this.Controls.Add(this.OneIteration);
             this.Controls.Add(this.PrevWalls);
             this.Controls.Add(this.Directions);
@@ -135,5 +148,6 @@
         private Button PrevWalls;
         private System.Windows.Forms.Timer SearchTimer;
         private Button OneIteration;
+        private ComboBox UseDiagonals;
     }
 }

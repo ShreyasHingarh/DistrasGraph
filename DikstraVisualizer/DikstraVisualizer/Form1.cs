@@ -54,17 +54,24 @@ namespace DikstraVisualizer
             g = Graphics.FromImage(map);
             wallsValues = new List<int>();
             visualizer = new CreateGraphVisualizer(22, 32, 25);
+
             HeuristicsPicker.Items.Add("Manhattan");
             HeuristicsPicker.Items.Add("Chebyshev");
             HeuristicsPicker.Items.Add("Octile");
             HeuristicsPicker.Items.Add("Euclidian");
+
+            UseDiagonals.Items.Add("Use");
+            UseDiagonals.Items.Add("No use");
+           
+
             visualizer.createGridOfVertices(g);
             visualizer.createEdgesForGrid();
             Directions.Text = "C,D,E,S";
+            UseDiagonals.SelectedIndex = 0;
             Picture.Image = map;
         }
 
-        //add sand, mud, make animated
+        //add sand, mud
         private void Form1_Load(object sender, EventArgs e)
         {
 
@@ -135,6 +142,7 @@ namespace DikstraVisualizer
                 hasRan = false;
                 hasfinished = false;
                 SearchTimer.Enabled = false;
+                UseDiagonals.SelectedIndex = 0;
             }
             //start the search
             else if (e.KeyCode == Keys.S && !hasRan)
@@ -186,14 +194,17 @@ namespace DikstraVisualizer
                             {
                                 visualizer.Graph.AddVertex(Vertex);
                                 visualizer.CreateEdgesForAVertex(x, i);
-                                visualizer.CreateEdgesForAVertex(x - 1, i - 1);
                                 visualizer.CreateEdgesForAVertex(x - 1, i);
-                                visualizer.CreateEdgesForAVertex(x - 1, i + 1);
                                 visualizer.CreateEdgesForAVertex(x, i + 1);
-                                visualizer.CreateEdgesForAVertex(x + 1, i + 1);
                                 visualizer.CreateEdgesForAVertex(x + 1, i);
-                                visualizer.CreateEdgesForAVertex(x + 1, i - 1);
                                 visualizer.CreateEdgesForAVertex(x, i - 1);
+                                if(UseDiagonals.SelectedIndex == 0)
+                                {
+                                    visualizer.CreateEdgesForAVertex(x - 1, i - 1);
+                                    visualizer.CreateEdgesForAVertex(x - 1, i + 1);
+                                    visualizer.CreateEdgesForAVertex(x + 1, i + 1);
+                                    visualizer.CreateEdgesForAVertex(x + 1, i - 1);
+                                }
                                 break;
                             }
                         }
@@ -249,7 +260,7 @@ namespace DikstraVisualizer
             }
             g.FillRectangle(brush, info.Position);
             g.DrawRectangle(Pens.Black, info.Position);
-            if(SearchTimer.Enabled == false)
+            if (SearchTimer.Enabled == false)
             {
                 SearchTimer.Stop();
                 EndOfSearch(visualizer.Graph.EndingAStar(StartPoint, EndPoint));
@@ -258,7 +269,7 @@ namespace DikstraVisualizer
         }
         private void OneIteration_Click(object sender, EventArgs e)
         {
-            
+
             if (StartPoint == null || EndPoint == null || HeurIndex < 0 || hasfinished) return;
             if (!hasRan)
             {
@@ -287,6 +298,35 @@ namespace DikstraVisualizer
             {
                 hasfinished = true;
                 EndOfSearch(visualizer.Graph.EndingAStar(StartPoint, EndPoint));
+            }
+        }
+
+        private void UseDiagonal_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(UseDiagonals.SelectedIndex == 0)
+            {
+                for (int i = 0; i < visualizer.YAmount; i++)
+                {
+                    for (int x = 0; x < visualizer.XAmount; x++)
+                    {
+                        visualizer.GetDiagonalEdges(x,i, (float)Math.Sqrt(2) * 1);
+                    }
+                }
+            }
+            else if (UseDiagonals.SelectedIndex == 1)
+            {
+                
+                for (int i = 0; i < visualizer.Graph.edges.Count;)
+                {
+                    if (visualizer.Graph.edges[i].Distance != 1)
+                    {
+                        visualizer.Graph.RemoveEdge(visualizer.Graph.edges[i]);
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                }
             }
         }
     }
