@@ -83,8 +83,13 @@ namespace DikstraVisualizer
             curEdge.EndingPoint.Founder = current;
 
         }
-        public bool MainAStarPart(Vertex<T> a, Vertex<T> b, int HeurType, out Information info)
+        public bool MainAStarPart(Vertex<T> b, int HeurType, out Information info)
         {
+            if(Queue.Count == 0)
+            {
+                info = new Information();
+                return false;
+            }
             if (!b.HasBeenVisited)
             {
                 

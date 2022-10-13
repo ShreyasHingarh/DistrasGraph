@@ -251,7 +251,7 @@ namespace DikstraVisualizer
         private void SearchTimer_Tick(object sender, EventArgs e)
         {
             Information info;
-            SearchTimer.Enabled = visualizer.Graph.MainAStarPart(StartPoint, EndPoint, HeurIndex, out info);
+            SearchTimer.Enabled = visualizer.Graph.MainAStarPart(EndPoint, HeurIndex, out info);
             if (info.Position == StartPoint.Position || info.Position == EndPoint.Position) return;
             Brush brush = Brushes.LightGreen;
             if (info.result == Result.Dequeue)
@@ -281,7 +281,7 @@ namespace DikstraVisualizer
             while (i < 10)
             {
                 Information info;
-                result = visualizer.Graph.MainAStarPart(StartPoint, EndPoint, HeurIndex, out info);
+                result = visualizer.Graph.MainAStarPart( EndPoint, HeurIndex, out info);
                 if (info.Position == StartPoint.Position || info.Position == EndPoint.Position) return;
                 Brush brush = Brushes.LightBlue;
                 if (info.result == Result.Enqueue)

@@ -100,7 +100,7 @@
             this.OneIteration.Name = "OneIteration";
             this.OneIteration.Size = new System.Drawing.Size(75, 59);
             this.OneIteration.TabIndex = 5;
-            this.OneIteration.Text = "For One Iteration of Finder";
+            this.OneIteration.Text = "For Ten Iterations of Finder";
             this.OneIteration.UseVisualStyleBackColor = true;
             this.OneIteration.Click += new System.EventHandler(this.OneIteration_Click);
             // 
